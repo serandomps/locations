@@ -1,0 +1,28 @@
+{
+    "name": "locations",
+    "description": "locations component",
+    "scripts": [
+        "index.js",
+        "locate.js",
+        "create/index.js",
+        "find/index.js",
+        "findone/index.js",
+        "picker/index.js",
+        "remove/index.js"
+    ],
+    "styles": ["styles.css"],
+    "templates": [
+        "create/template.html",
+        "find/template.html",
+        "findone/template.html",
+        "picker/template.html",
+        "remove/template.html"
+    ],
+    "main": "index.js",
+    "dependencies": {
+        "serandomps/serand": "master",
+        "serandomps/utils": "master",
+        "serandomps/dust": "master",
+        "serandomps/form": "master"
+    }
+}

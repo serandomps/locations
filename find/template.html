@@ -1,0 +1,53 @@
+<h1 class="title text-center mb-4">{title}
+    <a href="/create-locations" class="ml-3 text-success">
+        <i class="fas fa-plus-circle"></i>
+    </a>
+</h1>
+{@slice context=locations size="30"}
+<div class="row">
+    {#.}
+    <div class="col-sm-6 col-lg-{size} mb-3">
+        <div class="thumbnail h-100">
+            <div class="card h-100">
+                <div class="card-header">{name}</div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-start mb-1">
+                        <div class="d-inline overflow-hidden">{line1}</div>
+                    </div>
+                    <div class="d-flex justify-content-start mb-1">
+                        <div class="d-inline overflow-hidden">{line2}</div>
+                    </div>
+                    <div class="d-flex justify-content-start mb-1">
+                        <div class="d-inline overflow-hidden">{city}</div>
+                    </div>
+                    <div class="d-flex justify-content-start mb-1">
+                        <div class="d-inline overflow-hidden">{district}</div>
+                    </div>
+                    <div class="d-flex justify-content-start mb-1">
+                        <div class="d-inline overflow-hidden">{province}</div>
+                    </div>
+                    <div class="d-flex justify-content-start mb-1">
+                        <div class="d-inline overflow-hidden">{state}</div>
+                    </div>
+                    <div class="d-flex justify-content-start mb-1">
+                        <div class="d-inline overflow-hidden">{country}</div>
+                    </div>
+                    <div class="d-flex justify-content-start mb-1">
+                        <div class="d-inline overflow-hidden">{latitude}</div>
+                    </div>
+                    <div class="d-flex justify-content-start mb-1">
+                        <div class="d-inline overflow-hidden">{longitude}</div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="d-flex flex-row-reverse">
+                        <a href="/locations/{id}/delete" class="delete"><i class="fas fa-trash text-danger"></i></a>
+                        <a href="/locations/{id}/edit" class="edit mr-2"><i class="far fa-edit"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {/.}
+</div>
+{/slice}

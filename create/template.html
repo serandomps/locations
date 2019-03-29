@@ -1,0 +1,33 @@
+{?_.parent}
+<div class="locations-create">
+{:else}
+<div class="row">
+    <div class="col-md"></div>
+    <div class="col-md-10">
+        <h1 class="title text-center mb-3">{?id}Edit {name}{:else}Create your location{/id}</h1>
+        <div class="card mb-3">
+            <!--<div class="card-header">Contacts</div>-->
+            <div class="card-body">
+{/_.parent}
+                {@blocks block="text" id=_.container name="search" help="Search your address" value=address label="Search" icon="fas fa-search" srOnly="true"/}
+                <div class="map mb-3 rounded border"></div>
+                {@blocks block="text" id=_.container name="name" help="Name" value=location.name label="Name"/}
+                {@blocks block="text" id=_.container name="line1" help="Line 1" value=location.line1 label="Address Line 1"/}
+                {@blocks block="text" id=_.container name="line2" help="Line 1" value=location.line2 label="Address Line 2"/}
+                {@blocks block="text" id=_.container name="postal" help="Postal code" value=location.postal label="Postal Code"/}
+                {@blocks block="text" id=_.container name="city" help="City" value=location.city label="City" readOnly="true"/}
+                {@blocks block="text" id=_.container name="district" help="District" value=location.district label="District" readOnly="true"/}
+                {@blocks block="text" id=_.container name="province" help="Province" value=location.province label="Province" readOnly="true"/}
+                {@blocks block="text" id=_.container name="state" help="State" value=location.state label="State" readOnly="true"/}
+                {@blocks block="text" id=_.container name="country" help="Country" value=location.country label="Country" readOnly="true"/}
+{?_.parent}
+</div>
+{:else}
+                <button class="create btn btn-primary mr-1">Create</button>
+                <a href="/locations" class="cancel btn btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md"></div>
+</div>
+{/_.parent}
