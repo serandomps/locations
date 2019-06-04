@@ -71,7 +71,7 @@ var findLocations = function (options, done) {
 module.exports = function (ctx, container, options, done) {
     var sandbox = container.sandbox;
     options = options || {};
-    findLocations({user: options.user || ctx.user && ctx.user.id}, function (err, locations) {
+    findLocations({user: options.user || ctx.token && ctx.token.user.id}, function (err, locations) {
         if (err) {
             return done(err);
         }
