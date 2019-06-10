@@ -5,7 +5,7 @@ var locations = require('../findone');
 
 dust.loadSource(dust.compile(require('./template.html'), 'locations-remove'));
 
-var index = function (id, done) {
+var remove = function (id, done) {
     $.ajax({
         method: 'DELETE',
         url: utils.resolve('accounts:///apis/v/locations/' + id),
@@ -46,7 +46,7 @@ module.exports = function (ctx, container, options, done) {
             var el = sandbox.append(out);
             var id = options.id;
             $('.remove', el).on('click', function () {
-                index(id, function (err) {
+                remove(id, function (err) {
                     if (err) {
                         return console.error(err);
                     }
