@@ -23,7 +23,7 @@
 {?_.parent}
 </div>
 {:else}
-                <button class="create btn btn-primary mr-1">Create</button>
+                <button class="create btn btn-primary mr-1">{?id}Update{:else}Create{/id}</button>
                 <a href="/locations" class="cancel btn btn-secondary">Cancel</a>
             </div>
         </div>

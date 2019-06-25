@@ -526,11 +526,7 @@ var render = function (ctx, container, options, location, done) {
     var id = location && location.id;
     var sandbox = container.sandbox;
     var loc = _.cloneDeep(location || {});
-    loc._ = {
-        container: container.id,
-        parent: container.parent
-    };
-    dust.render('locations-create', loc, function (err, out) {
+    dust.render('locations-create', serand.pack(loc, container), function (err, out) {
         if (err) {
             return done(err);
         }

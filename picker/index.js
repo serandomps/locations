@@ -85,13 +85,12 @@ module.exports = function (ctx, container, options, done) {
                 label: locate.serialize(location)
             }
         }));
-        dust.render('locations-picker', {
+        dust.render('locations-picker', serand.pack({
             _: {
                 label: options.label,
-                container: container.id,
                 picks: picks
             }
-        }, function (err, out) {
+        }, container), function (err, out) {
             if (err) {
                 return done(err);
             }
@@ -102,7 +101,7 @@ module.exports = function (ctx, container, options, done) {
             var eventer = utils.eventer();
 
             create(ctx, {
-                id: container.id,
+                container: container.id,
                 sandbox: $('.creator', elem),
                 parent: elem
             }, null, function (err, o) {
