@@ -13,6 +13,8 @@
     ],
     "styles": ["styles.css"],
     "templates": [
+        "service/cities.json",
+        "service/provinces.json",
         "create/template.html",
         "find/template.html",
         "findone/template.html",

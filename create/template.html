@@ -14,8 +14,8 @@
                 {@blocks block="text" id=_.container name="name" help="Name" value=location.name label="Name"/}
                 {@blocks block="text" id=_.container name="line1" help="Line 1" value=location.line1 label="Address Line 1"/}
                 {@blocks block="text" id=_.container name="line2" help="Line 1" value=location.line2 label="Address Line 2"/}
-                {@blocks block="text" id=_.container name="postal" help="Postal code" value=location.postal label="Postal Code"/}
-                {@blocks block="text" id=_.container name="city" help="City" value=location.city label="City" readOnly="true"/}
+                {@blocks block="select" id=_.container name="city" label="City" title="City" value=location.city options=_.cities search="true"/}
+                {@blocks block="select" id=_.container name="postal" label="Postal Code" title="Postal Code" value=location.postal options=_.postals search="true"/}
                 {@blocks block="text" id=_.container name="district" help="District" value=location.district label="District" readOnly="true"/}
                 {@blocks block="text" id=_.container name="province" help="Province" value=location.province label="Province" readOnly="true"/}
                 {@blocks block="text" id=_.container name="state" help="State" value=location.state label="State" readOnly="true"/}

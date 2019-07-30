@@ -3,6 +3,8 @@ var form = require('form');
 var utils = require('utils');
 var serand = require('serand');
 
+var service = require('../service');
+
 dust.loadSource(dust.compile(require('./template.html'), 'locations-create'));
 
 var LOCATIONS_API = utils.resolve('accounts:///apis/v/locations');
@@ -58,7 +60,7 @@ var configs = {
     },
     city: {
         find: function (context, source, done) {
-            done(null, $('input', source).val());
+            serand.blocks('select', 'find', source, done);
         },
         validate: function (context, data, value, done) {
             if (!value) {
@@ -67,13 +69,40 @@ var configs = {
             done(null, null, value);
         },
         update: function (context, source, error, value, done) {
-            $('input', source).val(value);
-            done()
+            serand.blocks('select', 'update', source, {
+                value: value
+            }, done);
+        },
+        render: function (ctx, lform, data, value, done) {
+            var el = $('.city', lform.elem);
+            serand.blocks('select', 'create', el, {
+                value: value,
+                change: function () {
+                    var city = service.cityByName($(this).val());
+                    var postal = city && city.postal;
+                    var source = $('.postal', lform.elem);
+                    serand.blocks('select', 'find', source, function (err, value) {
+                        if (err) {
+                            return console.error(err);
+                        }
+                        if (value === postal) {
+                            return;
+                        }
+                        serand.blocks('select', 'update', source, {
+                            value: postal
+                        }, function (err) {
+                            if (err) {
+                                return console.error(err);
+                            }
+                        });
+                    });
+                }
+            }, done);
         }
     },
     postal: {
         find: function (context, source, done) {
-            done(null, $('input', source).val());
+            serand.blocks('select', 'find', source, done);
         },
         validate: function (context, data, value, done) {
             if (!value) {
@@ -82,8 +111,35 @@ var configs = {
             done(null, null, value);
         },
         update: function (context, source, error, value, done) {
-            $('input', source).val(value);
-            done()
+            serand.blocks('select', 'update', source, {
+                value: value
+            }, done);
+        },
+        render: function (ctx, lform, data, value, done) {
+            var el = $('.postal', lform.elem);
+            serand.blocks('select', 'create', el, {
+                value: value,
+                change: function () {
+                    var city = service.cityByPostal($(this).val());
+                    var name = city && city.name;
+                    var source = $('.city', lform.elem);
+                    serand.blocks('select', 'find', source, function (err, value) {
+                        if (err) {
+                            return console.error(err);
+                        }
+                        if (value === name) {
+                            return;
+                        }
+                        serand.blocks('select', 'update', source, {
+                            value: name
+                        }, function (err) {
+                            if (err) {
+                                return console.error(err);
+                            }
+                        });
+                    });
+                }
+            }, done);
         }
     },
     district: {
@@ -261,13 +317,16 @@ var create = function (locationsForm, id, done) {
             });
         });
     });
-}
+};
 
 var formats = {
     'LK': function (o) {
         move(o, 'state', 'province');
         if (!o.line1 && o.line2) {
             move(o, 'line2', 'line1');
+        }
+        if (o.province) {
+            o.province = o.province.replace(/\sProvince$/, '');
         }
         return o;
     }
@@ -385,18 +444,13 @@ var locate = function (o) {
         }
         return line || null;
     };
-    var city = function (o) {
-        if (o.locality) {
-            return o.locality.long_name;
-        }
-        return null;
-    };
+    var city = service.findCity(o.locality && o.locality.long_name, o.postal_code && o.postal_code.long_name);
     var location = {
         name: o.name,
         line1: line1(o),
         line2: line2(o),
-        city: o.locality && o.locality.long_name,
-        postal: o.postal_code && o.postal_code.long_name,
+        city: city && city.name,
+        postal: city && city.postal,
         district: o.administrative_area_level_2 && o.administrative_area_level_2.long_name,
         state: o.administrative_area_level_1 && o.administrative_area_level_1.long_name,
         country: o.country && o.country.short_name,
@@ -427,11 +481,22 @@ var initMap = function (ctx, elem, options, done) {
 
     map.addListener('click', function (e) {
         marker.setPosition(e.latLng);
-        places.getDetails({placeId: e.placeId}, function (place, status) {
-            if (status !== 'OK') {
-                return console.error(status)
+        if (e.placeId) {
+            places.getDetails({placeId: e.placeId}, function (place, status) {
+                if (status !== 'OK') {
+                    return console.error(status)
+                }
+                locationUpdated(ctx, elem, locate(place));
+            });
+            return;
+        }
+        findLocation(ctx, {
+            location: e.latLng
+        }, function (err, location) {
+            if (err) {
+                return console.error(err);
             }
-            locationUpdated(ctx, elem, locate(place));
+            locationUpdated(ctx, elem, location);
         });
     });
 
@@ -525,8 +590,28 @@ var showMap = function (ctx, elem, done) {
 var render = function (ctx, container, options, location, done) {
     var id = location && location.id;
     var sandbox = container.sandbox;
-    var loc = _.cloneDeep(location || {});
-    dust.render('locations-create', serand.pack(loc, container), function (err, out) {
+    var loc = serand.pack(_.cloneDeep(location || {}), container);
+    var allCities = service.allCities();
+    var cities = [];
+    allCities.forEach(function (city) {
+        cities.push({
+            value: city.name,
+            label: [city.name].concat(city.aliases || []).join(' | ')
+        });
+    });
+    cities = _.sortBy(cities, 'value');
+    loc._.cities = cities;
+
+    var postals = _.map(allCities, function (city) {
+        return {
+            value: city.postal,
+            label: city.postal
+        }
+    });
+    postals = _.sortBy(postals, 'value');
+    loc._.postals = postals;
+
+    dust.render('locations-create', loc, function (err, out) {
         if (err) {
             return done(err);
         }

@@ -1,5 +1,22 @@
 var utils = require('utils');
 
+var cities = utils.json(require('./cities.json'));
+
+var provinces = utils.json(require('./provinces'));
+
+var cityByPostal = _.keyBy(cities, 'postal');
+
+var cityByName = {};
+
+cities.forEach(function (city) {
+    cityByName[city.name] = city;
+    var aliases = city.aliases || [];
+    aliases.forEach(function (alias) {
+        cityByName[alias] = city;
+    });
+});
+
+var provincesByName = _.keyBy(provinces, 'name');
 
 exports.findOne = function (options, done) {
     $.ajax({
@@ -57,4 +74,37 @@ exports.create = function (options, done) {
             done(err || status || xhr);
         }
     });
+};
+
+exports.allCities = function () {
+    return cities;
+};
+
+exports.allProvinces = function () {
+    return provinces;
+};
+
+exports.allDistricts = function (province) {
+    province = provincesByName[province];
+    return province.districts;
+};
+
+exports.cityByPostal = function (postal) {
+    return cityByPostal[postal];
+};
+
+exports.cityByName = function (name) {
+    return cityByName[name];
+};
+
+exports.findCity = function (name, postal) {
+    var city = exports.cityByName(name);
+    if (city) {
+        return city;
+    }
+    city = exports.cityByPostal(postal);
+    if (city) {
+        return city;
+    }
+    return null;
 };
