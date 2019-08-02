@@ -2,21 +2,45 @@ var utils = require('utils');
 
 var cities = utils.json(require('./cities.json'));
 
-var provinces = utils.json(require('./provinces'));
+var citiesByDistrict = {};
 
-var cityByPostal = _.keyBy(cities, 'postal');
+var citiesByProvince = {};
 
-var cityByName = {};
+var districtsByProvince = {};
+
+var provincesByDistrict = {};
+
+var citiesByName = {};
+
+var citiesByPostal = {};
 
 cities.forEach(function (city) {
-    cityByName[city.name] = city;
-    var aliases = city.aliases || [];
+
+    citiesByName[city.name] = city;
+    citiesByPostal[city.postal] = city;
+
+    var cityByDistrict = citiesByDistrict[city.district] || (citiesByDistrict[city.district] = []);
+    cityByDistrict.push(city);
+
+    var cityByProvince = citiesByProvince[city.province] || (citiesByProvince[city.province] = []);
+    cityByProvince.push(city);
+
+    var districtByProvince = districtsByProvince[city.province] || (districtsByProvince[city.province] = []);
+    if (districtByProvince.indexOf(city.district) === -1) {
+        districtByProvince.push(city.district);
+    }
+
+    provincesByDistrict[city.district] = city.province;
+
+    var aliases = city.aliases;
+    if (!aliases) {
+        return;
+    }
     aliases.forEach(function (alias) {
-        cityByName[alias] = city;
+        citiesByName[alias] = city;
+        citiesByPostal[alias] = city;
     });
 });
-
-var provincesByName = _.keyBy(provinces, 'name');
 
 exports.findOne = function (options, done) {
     $.ajax({
@@ -81,20 +105,35 @@ exports.allCities = function () {
 };
 
 exports.allProvinces = function () {
-    return provinces;
+    return Object.keys(districtsByProvince);
 };
 
-exports.allDistricts = function (province) {
-    province = provincesByName[province];
-    return province.districts;
+exports.allDistricts = function () {
+    return Object.keys(provincesByDistrict);
 };
 
 exports.cityByPostal = function (postal) {
-    return cityByPostal[postal];
+    return citiesByPostal[postal];
 };
 
 exports.cityByName = function (name) {
-    return cityByName[name];
+    return citiesByName[name];
+};
+
+exports.districtsByProvince = function (province) {
+    return districtsByProvince[province] || [];
+};
+
+exports.citiesByDistrict = function (district) {
+    return citiesByDistrict[district];
+};
+
+exports.provinceByDistrict = function (district) {
+    return provincesByDistrict[district];
+};
+
+exports.citiesByProvince = function (province) {
+    return citiesByProvince[province];
 };
 
 exports.findCity = function (name, postal) {
