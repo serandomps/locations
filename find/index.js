@@ -26,7 +26,7 @@ module.exports = function (ctx, container, options, done) {
         var sandbox = container.sandbox;
         dust.render('locations-find', serand.pack({
             title: options.title,
-            size: 4,
+            size: 6,
             locations: data
         }, container), function (err, out) {
             if (err) {
