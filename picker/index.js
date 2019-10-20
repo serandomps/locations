@@ -88,7 +88,8 @@ module.exports = function (ctx, container, options, done) {
         dust.render('locations-picker', serand.pack({
             _: {
                 label: options.label,
-                picks: picks
+                picks: picks,
+                locations: !!locations.length
             }
         }, container), function (err, out) {
             if (err) {
@@ -99,7 +100,7 @@ module.exports = function (ctx, container, options, done) {
             var pickerForm = form.create(container.id, elem, pickerConfig);
 
             pickerForm.render(ctx, {
-                location: options.location
+                location: options.location || (!locations.length && '+')
             }, function (err) {
                 if (err) {
                     return done(err);

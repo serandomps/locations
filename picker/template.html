@@ -1,4 +1,4 @@
 <div class="picker">
     {@blocks block="select" id=_.container name="location" label=_.label value=location options=_.picks/}
 </div>
-<div class="creator hidden"></div>
+<div class="creator{?_.locations} hidden{/_.locations}"></div>
