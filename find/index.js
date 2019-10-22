@@ -1,25 +1,16 @@
 var dust = require('dust')();
 var serand = require('serand');
 var utils = require('utils');
+var Locations = require('../service');
 
 dust.loadSource(dust.compile(require('./template.html'), 'locations-find'));
 
-var index = function (done) {
-    $.ajax({
-        method: 'GET',
-        url: utils.resolve('accounts:///apis/v/locations'),
-        dataType: 'json',
-        success: function (data) {
-            done(null, data);
-        },
-        error: function (xhr, status, err) {
-            done(err || status || xhr);
-        }
-    });
-};
-
 module.exports = function (ctx, container, options, done) {
-    index(function (err, data) {
+    Locations.find({
+        query: {
+            user: ctx.token && ctx.token.user.id
+        }
+    }, function (err, data) {
         if (err) {
             return done(err);
         }

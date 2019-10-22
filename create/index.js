@@ -3,7 +3,7 @@ var form = require('form');
 var utils = require('utils');
 var serand = require('serand');
 
-var service = require('../service');
+var Location = require('../service');
 
 dust.loadSource(dust.compile(require('./template.html'), 'locations-create'));
 
@@ -78,7 +78,7 @@ var configs = {
             serand.blocks('select', 'create', el, {
                 value: value,
                 change: function () {
-                    var city = service.cityByName($(this).val());
+                    var city = Location.cityByName($(this).val());
                     var postal = city && city.postal;
                     var source = $('.postal', lform.elem);
                     serand.blocks('select', 'find', source, function (err, value) {
@@ -120,7 +120,7 @@ var configs = {
             serand.blocks('select', 'create', el, {
                 value: value,
                 change: function () {
-                    var city = service.cityByPostal($(this).val());
+                    var city = Location.cityByPostal($(this).val());
                     var name = city && city.name;
                     var source = $('.city', lform.elem);
                     serand.blocks('select', 'find', source, function (err, value) {
@@ -270,50 +270,26 @@ var configs = {
     }
 };
 
-var findOne = function (id, done) {
-    $.ajax({
-        method: 'GET',
-        url: LOCATIONS_API + '/' + id,
-        dataType: 'json',
-        success: function (data) {
-            done(null, data);
-        },
-        error: function (xhr, status, err) {
-            done(err || status || xhr);
-        }
-    });
-};
-
-var create = function (locationsForm, id, done) {
+var create = function (locationsForm, location, done) {
     locationsForm.find(function (err, data) {
         if (err) {
-            return console.error(err);
+            return done(err);
         }
         locationsForm.validate(data, function (err, errors, data) {
             if (err) {
-                return console.error(err);
+                return done(err);
             }
             locationsForm.update(errors, data, function (err) {
                 if (err) {
-                    return console.error(err);
+                    return done(err);
                 }
                 if (errors) {
-                    return;
+                    return done();
                 }
-                $.ajax({
-                    method: id ? 'PUT' : 'POST',
-                    url: LOCATIONS_API + (id ? '/' + id : ''),
-                    dataType: 'json',
-                    contentType: 'application/json',
-                    data: JSON.stringify(data),
-                    success: function (data) {
-                        console.log('location created successfully', data);
-                        done(null, data);
-                    },
-                    error: function (xhr, status, err) {
-                        done(err);
-                    }
-                });
+                if (location) {
+                    data.id = location.id;
+                }
+                utils.create('accounts', 'locations', Location.create, location, data, done);
             });
         });
     });
@@ -444,7 +420,7 @@ var locate = function (o) {
         }
         return line || null;
     };
-    var city = service.findCity(o.locality && o.locality.long_name, o.postal_code && o.postal_code.long_name);
+    var city = Location.findCity(o.locality && o.locality.long_name, o.postal_code && o.postal_code.long_name);
     var location = {
         name: o.name,
         line1: line1(o),
@@ -588,10 +564,9 @@ var showMap = function (ctx, elem, done) {
 };
 
 var render = function (ctx, container, options, location, done) {
-    var id = location && location.id;
     var sandbox = container.sandbox;
     var loc = serand.pack(_.cloneDeep(location || {}), container);
-    var allCities = service.allCities();
+    var allCities = Location.allCities();
     var cities = [];
     allCities.forEach(function (city) {
         cities.push({
@@ -632,7 +607,7 @@ var render = function (ctx, container, options, location, done) {
                 if (container.parent) {
                     done(null, {
                         create: function (created) {
-                            create(locationsForm, id, function (err, data) {
+                            create(locationsForm, location, function (err, data) {
                                 if (err) {
                                     return created(err);
                                 }
@@ -647,7 +622,7 @@ var render = function (ctx, container, options, location, done) {
                     return;
                 }
                 sandbox.on('click', '.create', function (e) {
-                    create(locationsForm, id, function (err) {
+                    create(locationsForm, location, function (err) {
                         if (err) {
                             return console.error(err);
                         }
@@ -674,7 +649,7 @@ module.exports = function (ctx, container, options, done) {
     if (!id) {
         return render(ctx, container, options, null, done);
     }
-    findOne(id, function (err, location) {
+    Location.findOne(options, function (err, location) {
         if (err) {
             return done(err);
         }
