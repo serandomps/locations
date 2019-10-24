@@ -37,7 +37,7 @@ var configs = {
         },
         validate: function (context, data, value, done) {
             if (!value) {
-                return done(null, 'Please enter the number, street etc. of your location');
+                return done(null, 'Please enter the number, street etc. of your location.');
             }
             done(null, null, value);
         },
@@ -64,7 +64,7 @@ var configs = {
         },
         validate: function (context, data, value, done) {
             if (!value) {
-                return done(null, 'Please enter the city of your location');
+                return done(null, 'Please enter the city of your location.');
             }
             done(null, null, value);
         },
@@ -106,7 +106,7 @@ var configs = {
         },
         validate: function (context, data, value, done) {
             if (!value) {
-                return done(null, 'Please enter the postal code of your location');
+                return done(null, 'Please enter the postal code of your location.');
             }
             done(null, null, value);
         },
@@ -148,7 +148,7 @@ var configs = {
         },
         validate: function (context, data, value, done) {
             if (!value) {
-                return done(null, 'Please enter the district of your location');
+                return done(null, 'Please enter the district of your location.');
             }
             done(null, null, value);
         },
@@ -176,7 +176,7 @@ var configs = {
         },
         validate: function (context, data, value, done) {
             if (!value) {
-                return done(null, 'Please enter the province of your location');
+                return done(null, 'Please enter the province of your location.');
             }
             done(null, null, value);
         },
@@ -229,7 +229,7 @@ var configs = {
         },
         validate: function (context, data, value, done) {
             if (!value) {
-                return done(null, 'Please select the country of your location');
+                return done(null, 'Please select the country of your location.');
             }
             done(null, null, value);
         },

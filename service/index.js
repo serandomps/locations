@@ -147,3 +147,10 @@ exports.findCity = function (name, postal) {
     }
     return null;
 };
+
+exports.findCountry = function (code) {
+    if (code === 'LK') {
+        return 'Sri Lanka';
+    }
+    return code;
+};
