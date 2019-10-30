@@ -42,6 +42,10 @@ cities.forEach(function (city) {
     });
 });
 
+var allProvinces = Object.keys(districtsByProvince).sort();
+
+var allDistricts = Object.keys(provincesByDistrict).sort();
+
 exports.findOne = function (options, done) {
     $.ajax({
         method: 'GET',
@@ -105,11 +109,11 @@ exports.allCities = function () {
 };
 
 exports.allProvinces = function () {
-    return Object.keys(districtsByProvince);
+    return allProvinces;
 };
 
 exports.allDistricts = function () {
-    return Object.keys(provincesByDistrict);
+    return allDistricts;
 };
 
 exports.cityByPostal = function (postal) {
@@ -121,11 +125,11 @@ exports.cityByName = function (name) {
 };
 
 exports.districtsByProvince = function (province) {
-    return districtsByProvince[province] || [];
+    return districtsByProvince[province].sort();
 };
 
 exports.citiesByDistrict = function (district) {
-    return citiesByDistrict[district];
+    return citiesByDistrict[district].sort();
 };
 
 exports.provinceByDistrict = function (district) {
@@ -133,7 +137,7 @@ exports.provinceByDistrict = function (district) {
 };
 
 exports.citiesByProvince = function (province) {
-    return citiesByProvince[province];
+    return citiesByProvince[province].sort();
 };
 
 exports.findCity = function (name, postal) {
