@@ -56,7 +56,7 @@ var pickerConfig = {
 var findLocations = function (options, done) {
     $.ajax({
         method: 'GET',
-        url: utils.resolve('accounts:///apis/v/locations' + utils.data({query: {user: options.user}})),
+        url: utils.resolve('accounts:///apis/v/locations' + utils.toData({query: {user: options.user}})),
         dataType: 'json',
         success: function (data) {
             done(null, data);
@@ -106,7 +106,7 @@ module.exports = function (ctx, container, options, done) {
                     return done(err);
                 }
                 create(ctx, {
-                    container: container.id,
+                    id: container.id,
                     sandbox: $('.creator', elem),
                     parent: elem
                 }, null, function (err, o) {
