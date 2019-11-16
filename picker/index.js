@@ -7,50 +7,52 @@ var locate = require('../locate');
 
 dust.loadSource(dust.compile(require('./template.html'), 'locations-picker'));
 
-var pickerConfig = {
-    location: {
-        find: function (context, source, done) {
-            serand.blocks('select', 'find', source, done);
-        },
-        validate: function (context, data, value, done) {
-            if (!value) {
-                return done(null, 'Please select an existing location or create one');
-            }
-            done(null, null, value);
-        },
-        update: function (context, source, error, value, done) {
-            done();
-        },
-        render: function (ctx, pickerForm, data, value, done) {
-            var picker = $('.picker .location', pickerForm.elem);
-            var creator = $('.creator', pickerForm.elem);
-            serand.blocks('select', 'create', picker, {
-                value: value,
-                change: function () {
-                    pickerForm.find(function (err, pick) {
-                        if (err) {
-                            return console.error(err);
-                        }
-                        pickerForm.validate(pick, function (err, errors, location) {
+var configs = function (options) {
+    return {
+        location: {
+            find: function (context, source, done) {
+                serand.blocks('select', 'find', source, done);
+            },
+            validate: function (context, data, value, done) {
+                if (options.required && !value) {
+                    return done(null, 'Please select an existing location or create one');
+                }
+                done(null, null, value);
+            },
+            update: function (context, source, error, value, done) {
+                done();
+            },
+            render: function (ctx, pickerForm, data, value, done) {
+                var picker = $('.picker .location', pickerForm.elem);
+                var creator = $('.creator', pickerForm.elem);
+                serand.blocks('select', 'create', picker, {
+                    value: value,
+                    change: function () {
+                        pickerForm.find(function (err, pick) {
                             if (err) {
                                 return console.error(err);
                             }
-                            pickerForm.update(errors, location, function (err) {
+                            pickerForm.validate(pick, function (err, errors, location) {
                                 if (err) {
                                     return console.error(err);
                                 }
-                                var val = pick.location;
-                                if (val === '+') {
-                                    return creator.removeClass('hidden');
-                                }
-                                creator.addClass('hidden');
+                                pickerForm.update(errors, location, function (err) {
+                                    if (err) {
+                                        return console.error(err);
+                                    }
+                                    var val = pick.location;
+                                    if (val === '+') {
+                                        return creator.removeClass('hidden');
+                                    }
+                                    creator.addClass('hidden');
+                                });
                             });
                         });
-                    });
-                }
-            }, done);
-        }
-    },
+                    }
+                }, done);
+            }
+        },
+    };
 };
 
 var findLocations = function (options, done) {
@@ -91,13 +93,13 @@ module.exports = function (ctx, container, options, done) {
                 picks: picks,
                 locations: !!locations.length
             }
-        }, container), function (err, out) {
+        }, container, 'locations'), function (err, out) {
             if (err) {
                 return done(err);
             }
 
             var elem = sandbox.append(out);
-            var pickerForm = form.create(container.id, elem, pickerConfig);
+            var pickerForm = form.create(container.id, elem, configs(options));
 
             pickerForm.render(ctx, {
                 location: options.location || (!locations.length && '+')
@@ -123,7 +125,12 @@ module.exports = function (ctx, container, options, done) {
                             if (o.location !== '+') {
                                 return done(err, o.location);
                             }
-                            creatorForm.find(done);
+                            creatorForm.find(function (err, data) {
+                                if (err) {
+                                    return done(err);
+                                }
+                                done(null, data.location);
+                            });
                         });
                     };
                     eventer.validate = function (loc, done) {
@@ -138,11 +145,22 @@ module.exports = function (ctx, container, options, done) {
                                     if (err) {
                                         return done(err);
                                     }
-                                    done(err, errors, loc);
+                                    if (errors) {
+                                        return done(null, errors.location);
+                                    }
+                                    done(null, null, loc);
                                 });
                                 return;
                             }
-                            creatorForm.validate(loc, done);
+                            creatorForm.validate(loc, function (err, errors, data) {
+                                if (err) {
+                                    return done(err);
+                                }
+                                if (errors) {
+                                    return done(null, errors.location);
+                                }
+                                done(null, null, data.location);
+                            });
                         });
                     };
                     eventer.update = function (errors, location, done) {

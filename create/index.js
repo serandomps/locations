@@ -586,7 +586,7 @@ var render = function (ctx, container, options, location, done) {
     postals = _.sortBy(postals, 'value');
     loc._.postals = postals;
 
-    dust.render('locations-create', serand.pack(loc, container), function (err, out) {
+    dust.render('locations-create', serand.pack(loc, container, 'locations'), function (err, out) {
         if (err) {
             return done(err);
         }
