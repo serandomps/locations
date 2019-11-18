@@ -626,11 +626,11 @@ var render = function (ctx, container, options, location, done) {
                         if (err) {
                             return console.error(err);
                         }
-                        serand.redirect('/locations');
+                        serand.redirect(options.location ||'/locations');
                     });
                 });
                 sandbox.on('click', '.cancel', function (e) {
-                    serand.redirect('/locations');
+                    serand.redirect(options.location || '/locations');
                 });
                 done(null, {
                     form: locationsForm,
