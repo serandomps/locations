@@ -91,7 +91,7 @@ module.exports = function (ctx, container, options, done) {
             _: {
                 label: options.label,
                 picks: picks,
-                locations: !!locations.length
+                expand: options.expand && !locations.length
             }
         }, container, 'locations'), function (err, out) {
             if (err) {
@@ -129,7 +129,7 @@ module.exports = function (ctx, container, options, done) {
                                 if (err) {
                                     return done(err);
                                 }
-                                done(null, data.location);
+                                done(null, data);
                             });
                         });
                     };
