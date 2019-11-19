@@ -78,9 +78,11 @@ module.exports = function (ctx, container, options, done) {
             return done(err);
         }
         var picks = [
-            {value: '', label: 'Location'},
-            {value: '+', label: 'Add Location'}
+            {value: '', label: 'Location'}
         ];
+        if (options.creatable) {
+            picks.push({value: '+', label: 'Add Location'});
+        }
         picks = picks.concat(_.map(locations, function (location) {
             return {
                 value: location.id,
@@ -102,7 +104,7 @@ module.exports = function (ctx, container, options, done) {
             var pickerForm = form.create(container.id, elem, configs(options));
 
             pickerForm.render(ctx, {
-                location: options.location || (!locations.length && '+')
+                location: options.location || (options.expand && '+')
             }, function (err) {
                 if (err) {
                     return done(err);
