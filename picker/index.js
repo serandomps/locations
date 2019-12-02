@@ -89,11 +89,12 @@ module.exports = function (ctx, container, options, done) {
                 label: locate.serialize(location)
             }
         }));
+        var expand = options.expand && !locations.length;
         dust.render('locations-picker', serand.pack({
             _: {
                 label: options.label,
                 picks: picks,
-                expand: options.expand && !locations.length
+                expand: expand
             }
         }, container, 'locations'), function (err, out) {
             if (err) {
@@ -102,9 +103,8 @@ module.exports = function (ctx, container, options, done) {
 
             var elem = sandbox.append(out);
             var pickerForm = form.create(container.id, elem, configs(options));
-
             pickerForm.render(ctx, {
-                location: options.location || (options.expand && '+')
+                location: options.location || (expand && '+')
             }, function (err) {
                 if (err) {
                     return done(err);
