@@ -1,6 +1,6 @@
 {
-    "name": "locations",
-    "description": "locations component",
+    "name": "model-locations",
+    "description": "model-locations component",
     "scripts": [
         "index.js",
         "locate.js",

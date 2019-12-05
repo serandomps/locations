@@ -5,7 +5,7 @@ var serand = require('serand');
 
 var Location = require('../service');
 
-dust.loadSource(dust.compile(require('./template.html'), 'locations-create'));
+dust.loadSource(dust.compile(require('./template.html'), 'model-locations-create'));
 
 var LOCATIONS_API = utils.resolve('accounts:///apis/v/locations');
 
@@ -156,18 +156,53 @@ var configs = {
             if (!value) {
                 return done();
             }
-            $('input', source).val(value);
+            $('input', source).val(value).change();
             source.removeClass('hidden');
             done()
         },
         render: function (ctx, lform, data, value, done) {
             var el = $('.district', lform.elem);
             if (value) {
-                el.removeClass('hidden').find('input').val(location.district);
+                el.removeClass('hidden');
             } else {
                 el.addClass('hidden');
             }
-            done()
+            serand.blocks('text', 'create', el, {
+                value: value,
+                change: function () {
+                    var thiz = $(this);
+                    var district = thiz.val();
+                    var cities = [];
+                    var postals = [];
+                    var citiesByDistrict = Location.citiesByDistrict(district);
+                    citiesByDistrict.forEach(function (city) {
+                        cities.push({
+                            value: city.name,
+                            label: [city.name].concat(city.aliases || []).join(' | ')
+                        });
+                        postals.push({
+                            value: city.postal,
+                            label: city.postal
+                        });
+                    });
+                    cities = _.sortBy(cities, 'value');
+                    serand.blocks('select', 'update', $('.city', lform.elem), {
+                        options: cities
+                    }, function (err) {
+                        if (err) {
+                            return console.error(err);
+                        }
+                    });
+                    postals = _.sortBy(postals, 'value');
+                    serand.blocks('select', 'update', $('.postal', lform.elem), {
+                        options: postals
+                    }, function (err) {
+                        if (err) {
+                            return console.error(err);
+                        }
+                    });
+                }
+            }, done);
         }
     },
     province: {
@@ -284,12 +319,17 @@ var create = function (locationsForm, location, done) {
                     return done(err);
                 }
                 if (errors) {
-                    return done();
+                    return done(null, errors);
                 }
                 if (location) {
                     data.id = location.id;
                 }
-                utils.create('accounts', 'locations', Location.create, location, data, done);
+                utils.create('accounts', 'locations', Location.create, location, data, function (err, location) {
+                    if (err) {
+                        return done(err);
+                    }
+                    done(null, null, location);
+                });
             });
         });
     });
@@ -586,7 +626,7 @@ var render = function (ctx, container, options, location, done) {
     postals = _.sortBy(postals, 'value');
     loc._.postals = postals;
 
-    dust.render('locations-create', serand.pack(loc, container, 'locations'), function (err, out) {
+    dust.render('model-locations-create', serand.pack(loc, container, 'model-locations'), function (err, out) {
         if (err) {
             return done(err);
         }
@@ -616,15 +656,18 @@ var render = function (ctx, container, options, location, done) {
                         },
                         form: locationsForm,
                         clean: function () {
-                            $('.locations-create', sandbox).remove();
+                            $('.model-locations-create', sandbox).remove();
                         }
                     });
                     return;
                 }
                 sandbox.on('click', '.create', function (e) {
-                    create(locationsForm, location, function (err) {
+                    create(locationsForm, location, function (err, errors) {
                         if (err) {
                             return console.error(err);
+                        }
+                        if (errors) {
+                            return;
                         }
                         serand.redirect(options.location ||'/locations');
                     });
@@ -635,7 +678,7 @@ var render = function (ctx, container, options, location, done) {
                 done(null, {
                     form: locationsForm,
                     clean: function () {
-                        $('.locations-create', sandbox).remove();
+                        $('.model-locations-create', sandbox).remove();
                     }
                 });
             });

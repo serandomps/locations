@@ -5,7 +5,7 @@ var dust = require('dust')();
 var create = require('../create');
 var locate = require('../locate');
 
-dust.loadSource(dust.compile(require('./template.html'), 'locations-picker'));
+dust.loadSource(dust.compile(require('./template.html'), 'model-locations-picker'));
 
 var configs = function (options) {
     return {
@@ -90,13 +90,13 @@ module.exports = function (ctx, container, options, done) {
             }
         }));
         var expand = options.expand && !locations.length;
-        dust.render('locations-picker', serand.pack({
+        dust.render('model-locations-picker', serand.pack({
             _: {
                 label: options.label,
                 picks: picks,
                 expand: expand
             }
-        }, container, 'locations'), function (err, out) {
+        }, container, 'model-locations'), function (err, out) {
             if (err) {
                 return done(err);
             }

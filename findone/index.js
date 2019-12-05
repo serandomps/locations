@@ -2,7 +2,7 @@ var dust = require('dust')();
 var serand = require('serand');
 var utils = require('utils');
 
-dust.loadSource(dust.compile(require('./template.html'), 'locations-findone'));
+dust.loadSource(dust.compile(require('./template.html'), 'model-locations-findone'));
 
 var findOne = function (id, done) {
     $.ajax({
@@ -24,7 +24,7 @@ module.exports = function (ctx, container, options, done) {
             return done(err);
         }
         var sandbox = container.sandbox;
-        dust.render('locations-findone', serand.pack(data, container), function (err, out) {
+        dust.render('model-locations-findone', serand.pack(data, container), function (err, out) {
             if (err) {
                 return done(err);
             }
@@ -42,7 +42,7 @@ module.exports = function (ctx, container, options, done) {
                 position: o.center
             });
             done(null, function () {
-                $('.locations-findone', sandbox).remove();
+                $('.model-locations-findone', sandbox).remove();
             });
         });
     });

@@ -1,9 +1,9 @@
-.locations-create .map {
+.model-locations-create .map {
     height: 400px;
     width: 100%;
 }
 
-.locations-findone .map {
+.model-locations-findone .map {
     height: 400px;
     width: 100%;
 }

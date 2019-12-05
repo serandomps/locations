@@ -3,7 +3,7 @@ var serand = require('serand');
 var utils = require('utils');
 var Locations = require('../service');
 
-dust.loadSource(dust.compile(require('./template.html'), 'locations-find'));
+dust.loadSource(dust.compile(require('./template.html'), 'model-locations-find'));
 
 module.exports = function (ctx, container, options, done) {
     Locations.find({
@@ -15,7 +15,7 @@ module.exports = function (ctx, container, options, done) {
             return done(err);
         }
         var sandbox = container.sandbox;
-        dust.render('locations-find', serand.pack({
+        dust.render('model-locations-find', serand.pack({
             title: options.title,
             size: 6,
             locations: data
@@ -25,7 +25,7 @@ module.exports = function (ctx, container, options, done) {
             }
             sandbox.append(out);
             done(null, function () {
-                $('.locations-find', sandbox).remove();
+                $('.model-locations-find', sandbox).remove();
             });
         });
     });
