@@ -187,7 +187,8 @@ var configs = {
                     });
                     cities = _.sortBy(cities, 'value');
                     serand.blocks('select', 'update', $('.city', lform.elem), {
-                        options: cities
+                        options: cities,
+                        value: data.city
                     }, function (err) {
                         if (err) {
                             return console.error(err);
@@ -195,7 +196,8 @@ var configs = {
                     });
                     postals = _.sortBy(postals, 'value');
                     serand.blocks('select', 'update', $('.postal', lform.elem), {
-                        options: postals
+                        options: postals,
+                        value: data.postal
                     }, function (err) {
                         if (err) {
                             return console.error(err);
@@ -669,7 +671,7 @@ var render = function (ctx, container, options, location, done) {
                         if (errors) {
                             return;
                         }
-                        serand.redirect(options.location ||'/locations');
+                        serand.redirect(options.location || '/locations');
                     });
                 });
                 sandbox.on('click', '.cancel', function (e) {

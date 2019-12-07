@@ -158,3 +158,34 @@ exports.findCountry = function (code) {
     }
     return code;
 };
+
+exports.locateByTags = function (tags) {
+    var location = {};
+    _.find(tags, function (tag) {
+        if (tag.name === 'location:locations:city') {
+            location.city = tag.value;
+            return;
+        }
+        if (tag.name === 'location:locations:district') {
+            location.district = tag.value;
+            return;
+        }
+        if (tag.name === 'location:locations:province') {
+            location.province = tag.value;
+            return;
+        }
+        if (tag.name === 'location:locations:state') {
+            location.state = tag.value;
+            return;
+        }
+        if (tag.name === 'location:locations:postal') {
+            location.postal = tag.value;
+            return;
+        }
+        if (tag.name === 'location:locations:country') {
+            location.country = tag.value;
+            return;
+        }
+    });
+    return location;
+};
