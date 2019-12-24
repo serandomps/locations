@@ -186,22 +186,34 @@ var configs = {
                         });
                     });
                     cities = _.sortBy(cities, 'value');
-                    serand.blocks('select', 'update', $('.city', lform.elem), {
-                        options: cities,
-                        value: data.city
-                    }, function (err) {
+                    var cityEl = $('.city', lform.elem);
+                    var postalEl = $('.postal', lform.elem);
+                    serand.blocks('select', 'find', cityEl, function (err, value) {
                         if (err) {
                             return console.error(err);
                         }
+                        serand.blocks('select', 'update', cityEl, {
+                            options: cities,
+                            value: value
+                        }, function (err) {
+                            if (err) {
+                                return console.error(err);
+                            }
+                        });
                     });
                     postals = _.sortBy(postals, 'value');
-                    serand.blocks('select', 'update', $('.postal', lform.elem), {
-                        options: postals,
-                        value: data.postal
-                    }, function (err) {
+                    serand.blocks('select', 'find', postalEl, function (err, value) {
                         if (err) {
                             return console.error(err);
                         }
+                        serand.blocks('select', 'update', postalEl, {
+                            options: postals,
+                            value: value
+                        }, function (err) {
+                            if (err) {
+                                return console.error(err);
+                            }
+                        });
                     });
                 }
             }, done);
@@ -352,7 +364,7 @@ var formats = {
 
 var move = function (o, from, to) {
     o[to] = o[from];
-    delete o[from];
+    o[from] = null;
     return o;
 };
 
@@ -649,9 +661,12 @@ var render = function (ctx, container, options, location, done) {
                 if (container.parent) {
                     done(null, {
                         create: function (created) {
-                            create(locationsForm, location, function (err, data) {
+                            create(locationsForm, location, function (err, errors, data) {
                                 if (err) {
                                     return created(err);
+                                }
+                                if (errors) {
+                                    return created(null, errors);
                                 }
                                 created(null, null, data);
                             });
