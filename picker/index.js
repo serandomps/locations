@@ -189,7 +189,7 @@ module.exports = function (ctx, container, options, done) {
                             if (errors) {
                                 return done(null, errors);
                             }
-                            done(null, null, location.id);
+                            done(null, null, location.id, location);
                         });
                     };
                     done(null, eventer);
