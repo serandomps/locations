@@ -338,7 +338,9 @@ var create = function (locationsForm, location, done) {
                 if (location) {
                     data.id = location.id;
                 }
-                utils.create('accounts', 'locations', Location.create, location, data, function (err, location) {
+                utils.create('accounts', 'locations', Location.create, location, data, function () {
+                    return true
+                }, function (err, location) {
                     if (err) {
                         return done(err);
                     }
