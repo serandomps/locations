@@ -681,7 +681,9 @@ var render = function (ctx, container, options, location, done) {
                     return;
                 }
                 sandbox.on('click', '.create', function (e) {
+                    utils.loading();
                     create(locationsForm, location, function (err, errors) {
+                        utils.loaded();
                         if (err) {
                             return console.error(err);
                         }
