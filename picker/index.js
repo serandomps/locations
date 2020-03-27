@@ -148,7 +148,7 @@ module.exports = function (ctx, container, options, done) {
                                         return done(err);
                                     }
                                     if (errors) {
-                                        return done(null, errors.location);
+                                        return done(null, errors);
                                     }
                                     done(null, null, loc);
                                 });
@@ -159,9 +159,9 @@ module.exports = function (ctx, container, options, done) {
                                     return done(err);
                                 }
                                 if (errors) {
-                                    return done(null, errors.location);
+                                    return done(null, errors);
                                 }
-                                done(null, null, data.location);
+                                done(null, null, data);
                             });
                         });
                     };
