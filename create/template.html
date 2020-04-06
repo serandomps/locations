@@ -6,11 +6,11 @@
         <!--<div class="card-header">Contacts</div>-->
         <div class="card-body">
 {/_.parent}
-                {@blocks block="text" id=_.container name="search" help="Search your address" value=address label="Search" icon="fas fa-search"/}
+                {@blocks block="text" id=_.container name="search" help="Search your address" value=address label="Search" icon="fas fa-search" details="Search for your address, street or city first."/}
                 <div class="map mb-3 rounded border"></div>
                 {@blocks block="text" id=_.container name="name" help="Name" value=location.name label="Name" icon="fas fa-tag"/}
                 {@blocks block="text" id=_.container name="line1" help="Line 1" value=location.line1 label="Address Line 1" icon="fas fa-map-marked"/}
-                {@blocks block="text" id=_.container name="line2" help="Line 2" value=location.line2 label="Address Line 2" icon="fas fa-map"/}
+                {@blocks block="text" id=_.container name="line2" help="Line 2 (optional)" value=location.line2 label="Address Line 2" icon="fas fa-map"/}
                 {@blocks block="select" id=_.container name="city" label="City" title="City" value=location.city options=_.cities size="10" icon="fas fa-city"/}
                 {@blocks block="select" id=_.container name="postal" label="Postal Code" title="Postal Code" value=location.postal options=_.postals size="10" icon="fas fa-envelope"/}
                 {@blocks block="text" id=_.container name="district" help="District" value=location.district label="District" readOnly="true" icon="fas fa-archway"/}
