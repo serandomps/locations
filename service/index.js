@@ -183,7 +183,7 @@ exports.locateByTags = function (tags) {
             return;
         }
         if (tag.name === 'location:locations:country') {
-            location.country = tag.value;
+            location.country = exports.findCountry(tag.value);
             return;
         }
     });

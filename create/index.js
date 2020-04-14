@@ -316,6 +316,40 @@ var configs = {
         render: function (ctx, lform, data, value, done) {
             done(null, {value: value});
         }
+    },
+    visibility: {
+        find: function (context, source, done) {
+            serand.blocks('checkboxes', 'find', source, function (err, value) {
+                done(err, value);
+            });
+        },
+        render: function (ctx, vform, data, value, done) {
+            var el = $('.visibility', vform.elem);
+            var visibility = data._ && data._.visibility && data._.visibility.published ? ['restricted'] : [];
+            serand.blocks('checkboxes', 'create', el, {
+                value: visibility
+            }, done);
+        }
+    },
+    _: {
+        validate: function (data, done) {
+            var _;
+            var visibility;
+            var groups = utils.groups();
+            var o = data.visibility;
+            delete data.visibility;
+            _ = data._ || (data._ = {});
+            visibility = _.visibility || (_.visibility = {});
+            if (o.indexOf('restricted') !== -1) {
+                visibility.published = {
+                    [groups.anonymous.id]: ['postal', 'city', 'district', 'province', 'state', 'country'],
+                    [groups.public.id]: ['postal', 'city', 'district', 'province', 'state', 'country']
+                };
+            } else {
+                delete visibility.published;
+            }
+            done(null, null, data);
+        }
     }
 };
 
@@ -641,6 +675,9 @@ var render = function (ctx, container, options, location, done) {
     });
     postals = _.sortBy(postals, 'value');
     loc._.postals = postals;
+    loc._.visibility = [
+        {label: 'Hidden', value: 'restricted'}
+    ];
 
     dust.render('model-locations-create', serand.pack(loc, container, 'model-locations'), function (err, out) {
         if (err) {

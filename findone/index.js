@@ -19,9 +19,19 @@ var findOne = function (id, done) {
 };
 
 module.exports = function (ctx, container, options, done) {
+    if (!options.id) {
+        return done(null, function () {
+            $('.model-locations-findone', sandbox).remove();
+        });
+    }
     findOne(options.id, function (err, data) {
         if (err) {
             return done(err);
+        }
+        if (!data || !data.latitude || !data.longitude) {
+            return done(null, function () {
+                $('.model-locations-findone', sandbox).remove();
+            });
         }
         var sandbox = container.sandbox;
         dust.render('model-locations-findone', serand.pack(data, container), function (err, out) {

@@ -17,6 +17,7 @@
                 {@blocks block="text" id=_.container name="province" help="Province" value=location.province label="Province" readOnly="true" icon="fas fa-landmark"/}
                 {@blocks block="text" id=_.container name="state" help="State" value=location.state label="State" readOnly="true" icon="fas fa-landmark"/}
                 {@blocks block="text" id=_.container name="country" help="Country" value=location.country label="Country" readOnly="true" icon="fas fa-globe-americas"/}
+                {@blocks block="checkboxes" id=_.container name="visibility" value=location._.visibility options=_.visibility label="Visibility" icon="fas fa-eye" details="Check to keep the exact location hidden from others."/}
 {?_.parent}
         </div>
 {:else}
