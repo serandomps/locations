@@ -4,10 +4,16 @@ var utils = require('utils');
 
 dust.loadSource(dust.compile(require('./template.html'), 'model-locations-findone'));
 
-var findOne = function (id, done) {
+var findOne = function (options, done) {
+    if (options.location) {
+        return done(null, options.location);
+    }
+    if (!options.id) {
+        return done()
+    }
     $.ajax({
         method: 'GET',
-        url: utils.resolve('accounts:///apis/v/locations/' + id),
+        url: utils.resolve('accounts:///apis/v/locations/' + options.id),
         dataType: 'json',
         success: function (data) {
             done(null, data);
@@ -19,22 +25,17 @@ var findOne = function (id, done) {
 };
 
 module.exports = function (ctx, container, options, done) {
-    if (!options.id) {
-        return done(null, function () {
-            $('.model-locations-findone', sandbox).remove();
-        });
-    }
-    findOne(options.id, function (err, data) {
+    findOne(options, function (err, location) {
         if (err) {
             return done(err);
         }
-        if (!data || !data.latitude || !data.longitude) {
+        if (!location || !location.latitude || !location.longitude) {
             return done(null, function () {
                 $('.model-locations-findone', sandbox).remove();
             });
         }
         var sandbox = container.sandbox;
-        dust.render('model-locations-findone', serand.pack(data, container), function (err, out) {
+        dust.render('model-locations-findone', serand.pack(location, container), function (err, out) {
             if (err) {
                 return done(err);
             }
@@ -42,8 +43,8 @@ module.exports = function (ctx, container, options, done) {
             var o = {
                 zoom: 18,
                 center: {
-                    lat: data.latitude,
-                    lng: data.longitude
+                    lat: location.latitude,
+                    lng: location.longitude
                 }
             };
             var map = new google.maps.Map($('.map', elem)[0], o);

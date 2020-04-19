@@ -334,6 +334,7 @@ var configs = {
     _: {
         validate: function (data, done) {
             var _;
+            var visibles;
             var visibility;
             var groups = utils.groups();
             var o = data.visibility;
@@ -341,10 +342,10 @@ var configs = {
             _ = data._ || (data._ = {});
             visibility = _.visibility || (_.visibility = {});
             if (o.indexOf('restricted') !== -1) {
-                visibility.published = {
-                    [groups.anonymous.id]: ['postal', 'city', 'district', 'province', 'state', 'country'],
-                    [groups.public.id]: ['postal', 'city', 'district', 'province', 'state', 'country']
-                };
+                visibles = {};
+                visibles[groups.anonymous.id] = ['postal', 'city', 'district', 'province', 'state', 'country'];
+                visibles[groups.public.id] = ['postal', 'city', 'district', 'province', 'state', 'country'];
+                visibility.published = visibles;
             } else {
                 delete visibility.published;
             }
@@ -534,6 +535,14 @@ var locate = function (o) {
     return format(location);
 };
 
+var getGeoCoder = function (ctx) {
+    if (ctx.geocoder) {
+        return ctx.geocoder;
+    }
+    ctx.geocoder = new google.maps.Geocoder();
+    return ctx.geocoder;
+}
+
 var initMap = function (ctx, elem, options, done) {
     var map = new google.maps.Map($('.map', elem)[0], options);
     var marker = new google.maps.Marker({
@@ -541,12 +550,15 @@ var initMap = function (ctx, elem, options, done) {
         position: options.center,
         draggable: true
     });
-    var geocoder = new google.maps.Geocoder();
     var autoComplete = new google.maps.places.Autocomplete($('.search', elem).find('input')[0], {});
     var places = new google.maps.places.PlacesService(map);
 
     map.addListener('click', function (e) {
-        marker.setPosition(e.latLng);
+        var latLng = {
+            lat: e.latLng.lat(),
+            lng: e.latLng.lng()
+        };
+        marker.setPosition(latLng);
         if (e.placeId) {
             places.getDetails({placeId: e.placeId}, function (place, status) {
                 if (status !== 'OK') {
@@ -556,12 +568,12 @@ var initMap = function (ctx, elem, options, done) {
             });
             return;
         }
-        findLocation(ctx, {
-            location: e.latLng
-        }, function (err, location) {
+        findLocation(ctx, latLng, function (err, location) {
             if (err) {
                 return console.error(err);
             }
+            location.latitude = latLng.lat;
+            location.longitude = latLng.lng;
             locationUpdated(ctx, elem, location);
         });
     });
@@ -580,7 +592,6 @@ var initMap = function (ctx, elem, options, done) {
 
     ctx.map = map;
     ctx.marker = marker;
-    ctx.geocoder = geocoder;
     ctx.autoComplete = autoComplete;
     ctx.places = places;
     done();
@@ -607,7 +618,7 @@ var findLocation = function (ctx, o, done) {
     if (ctx.location) {
         return done(null, ctx.location);
     }
-    ctx.geocoder.geocode(o, function (results, status) {
+    getGeoCoder(ctx).geocode({location: o}, function (results, status) {
         if (status !== 'OK') {
             return done(status);
         }
@@ -634,15 +645,18 @@ var showMap = function (ctx, elem, done) {
         if (ctx.map) {
             return updateMap(ctx, elem, {zoom: 18, center: center}, done);
         }
-        var options = {
-            zoom: 18,
-            center: center
-        };
-        initMap(ctx, elem, options, function (err) {
+        findLocation(ctx, center, function (err, location) {
             if (err) {
                 return done(err);
             }
-            findLocation(ctx, {location: center}, function (err, location) {
+            var options = {
+                zoom: 18,
+                center: {
+                    lat: location.latitude,
+                    lng: location.longitude
+                }
+            };
+            initMap(ctx, elem, options, function (err) {
                 if (err) {
                     return done(err);
                 }
