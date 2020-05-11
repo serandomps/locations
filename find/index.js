@@ -15,6 +15,9 @@ module.exports = function (ctx, container, options, done) {
             return done(err);
         }
         var sandbox = container.sandbox;
+        data.forEach(function (location) {
+            location.country = Locations.findCountry(location.country)
+        });
         dust.render('model-locations-find', serand.pack({
             title: options.title,
             size: 6,

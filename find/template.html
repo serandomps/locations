@@ -19,64 +19,31 @@
             </div>
         </nav>
     </div>
-    <h1 class="title font-weight-bold mb-3 text-center text-dark">{title}</h1>
+    <h1 class="title font-weight-bold mb-3 text-dark">{title}</h1>
     {@slice context=locations size="30"}
     <div class="row">
         {#.}
-        <div class="col-lg-{size} mb-3">
+        <div class="col-lg-{size} mb-5">
             <div class="thumbnail h-100">
-                <div class="card h-100">
+                <div class="card h-100 shadow-sm">
                     <div class="card-body position-relative">
-                        <h4 class="text-truncate text-dark font-weight-bold mb-3">{name}</h4>
+                        <h4 class="text-truncate text-dark font-weight-bold mb-3">
+                            <i class="fas fa-map-marker mr-2"></i>{name}
+                        </h4>
                         <div class="model-locations-find-body text-muted">
-                            {?line1}
-                            <div class="d-flex justify-content-start mb-1">
-                                <div class="d-inline overflow-hidden">{line1}</div>
+                            <div class="mb-1">{line1}{?line2}, {line2}{/line2}</div>
+                            <div class="mb-1">{city}, {postal}</div>
+                            <div class="mb-1">
+                                {?district}{district}{/district}
+                                {?province}, {province}{/province}
+                                {?state}, {state}{/state}
                             </div>
-                            {/line1}
-                            {?line2}
-                            <div class="d-flex justify-content-start mb-1">
-                                <div class="d-inline overflow-hidden">{line2}</div>
-                            </div>
-                            {/line2}
-                            {?city}
-                            <div class="d-flex justify-content-start mb-1">
-                                <div class="d-inline overflow-hidden">{city}</div>
-                            </div>
-                            {/city}
-                            {?district}
-                            <div class="d-flex justify-content-start mb-1">
-                                <div class="d-inline overflow-hidden">{district}</div>
-                            </div>
-                            {/district}
-                            {?province}
-                            <div class="d-flex justify-content-start mb-1">
-                                <div class="d-inline overflow-hidden">{province}</div>
-                            </div>
-                            {/province}
-                            {?state}
-                            <div class="d-flex justify-content-start mb-1">
-                                <div class="d-inline overflow-hidden">{state}</div>
-                            </div>
-                            {/state}
-                            {?country}
-                            <div class="d-flex justify-content-start mb-1">
-                                <div class="d-inline overflow-hidden">{country}</div>
-                            </div>
-                            {/country}
-                            {?latitude}
-                            <div class="d-flex justify-content-start mb-1">
-                                <div class="d-inline overflow-hidden">{latitude}</div>
-                            </div>
-                            {/latitude}
-                            {?longitude}
-                            <div class="d-flex justify-content-start mb-1">
-                                <div class="d-inline overflow-hidden">{longitude}</div>
-                            </div>
-                            {/longitude}
+                            <div class="mb-1">{country}</div>
+                            <div class="mb-1 mt-3">{latitude}</div>
+                            <div class="mb-1">{longitude}</div>
                         </div>
                     </div>
-                    <div class="card-footer bg-transparent border-top-0 mt-0 pt-0">
+                    <div class="card-footer bg-transparent border-top-0 mt-3 pl-3 pr-3">
                         <div class="d-flex text-muted">
                             <div class="flex-grow-1">
                                 <span class="badge badge-secondary text-capitalize pull-left">{status}</span>
