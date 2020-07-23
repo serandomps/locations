@@ -7,7 +7,7 @@ var Location = require('../service');
 
 dust.loadSource(dust.compile(require('./template.html'), 'model-locations-create'));
 
-var LOCATIONS_API = utils.resolve('accounts:///apis/v/locations');
+var LOCATIONS_API = utils.resolve('apis:///v/locations');
 
 var googleGelocate = 'https://www.googleapis.com/geolocation/v1/geolocate?key=';
 
@@ -373,7 +373,7 @@ var create = function (locationsForm, location, done) {
                 if (location) {
                     data.id = location.id;
                 }
-                utils.create('accounts', 'locations', Location.create, location, data, function () {
+                utils.create('locations', Location.create, location, data, function () {
                     return true
                 }, function (err, location) {
                     if (err) {

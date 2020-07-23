@@ -13,7 +13,7 @@ var findOne = function (options, done) {
     }
     $.ajax({
         method: 'GET',
-        url: utils.resolve('accounts:///apis/v/locations/' + options.id),
+        url: utils.resolve('apis:///v/locations/' + options.id),
         dataType: 'json',
         success: function (data) {
             done(null, data);

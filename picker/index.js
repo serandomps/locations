@@ -58,7 +58,7 @@ var configs = function (options) {
 var findLocations = function (options, done) {
     $.ajax({
         method: 'GET',
-        url: utils.resolve('accounts:///apis/v/locations' + utils.toData({query: {user: options.user}})),
+        url: utils.resolve('apis:///v/locations' + utils.toData({query: {user: options.user}})),
         dataType: 'json',
         success: function (data) {
             done(null, data);
